@@ -211,7 +211,15 @@ emp_id	emp_name	dep_id	dep_location
 69062	FRANK	2001	MELBOURNE
 69324	MARKER	1001	SYDNEY
 
-21.select emp_id,count(emp_id) as manager_id from employees group by emp_id;
+21.select manager_id,count(emp_name) as count from employees group by manager_id order by manager_id;
+manager_id	count
+NULL	1
+65646	2
+66928	5
+67832	1
+67858	1
+68319	3
+69062	1
 
 22.SELECT dep_id,COUNT(emp_id) FROM employees GROUP BY dep_id HAVING COUNT(emp_id) > 2;
 dep_id	(No column name)
@@ -224,7 +232,26 @@ dep_id	(No column name)
 emp_id	emp_name	job_name	manager_id	hire_date	salary	commission	dep_id
 67832	CLARE	MANAGER	68319	1991-06-09	2550.00	NULL	1001
 67858	SCARELET	ANALYST	65646	1997-04-19	3100.00	NULL	2001
-69324	MARKER	CLERK	67832	1992-01-23	1400.00	NULL	1001	
+69324	MARKER	CLERK	67832	1992-01-23	1400.00	NULL	1001
+
+24.alter table employees add gender varchar(15);
+update employees set gender='male' where emp_id=68319;
+select * from employees;
+emp_id	emp_name	job_name	manager_id	hire_date	salary	commission	dep_id	gender
+63679	SANDRINE	CLERK	69062	1990-12-18	900.00	NULL	2001	female
+64989	ADELYNE	SALESMAN	66928	1991-02-20	1700.00	400.00	3001	male
+65271	WADE	SALESMAN	66928	1991-02-22	1350.00	600.00	3001	male
+65646	JONAS	MANAGER	68319	1991-04-02	2957.00	NULL	2001	male
+66564	MADDEN	SALESMAN	66928	1991-09-28	1350.00	1500.00	3001	male
+66928	BLAZE	MANAGER	68319	1991-05-01	2750.00	NULL	3001	female
+67832	CLARE	MANAGER	68319	1991-06-09	2550.00	NULL	1001	female
+67858	SCARELET	ANALYST	65646	1997-04-19	3100.00	NULL	2001	female
+68319	KAYLING	PRESIDENT	NULL	1991-11-18	6000.00	NULL	1001	male
+68454	TUCKER	SALESMAN	66928	1991-09-08	1600.00	0.00	3001	male
+68736	ADNRES	CLERK	67858	1997-05-23	1200.00	NULL	2001	female
+69000	JULIUS	CLERK	66928	1991-12-03	1050.00	NULL	3001	female
+69062	FRANK	ANALYST	65646	1991-12-03	3100.00	NULL	2001	male
+69324	MARKER	CLERK	67832	1992-01-23	1400.00	NULL	1001	male	
 
 25.SELECT * from employees where job_name not in('MANAGER','PRESIDENT');
 emp_id	emp_name	job_name	manager_id	hire_date	salary	commission	dep_id
@@ -239,4 +266,38 @@ emp_id	emp_name	job_name	manager_id	hire_date	salary	commission	dep_id
 69062	FRANK	ANALYST	65646	1991-12-03	3100.00	NULL	2001
 69324	MARKER	CLERK	67832	1992-01-23	1400.00	NULL	1001
 
-26.SELECT emp_name,job_name as management_level from employees where job_name in('MANAGER','PRESIDENT');
+26.select emp_name,case when job_name in ('president','manager','analyst') then 'Management Level' else 'Employee Level' end as 'Level' from employees;
+emp_name	Level
+SANDRINE	Employee Level
+ADELYNE	Employee Level
+WADE	Employee Level
+JONAS	Management Level
+MADDEN	Employee Level
+BLAZE	Management Level
+CLARE	Management Level
+SCARELET	Management Level
+KAYLING	Management Level
+TUCKER	Employee Level
+ADNRES	Employee Level
+JULIUS	Employee Level
+FRANK	Management Level
+MARKER	Employee Level 
+
+
+27.UPDATE employees SET commission=650.00 WHERE EXISTS (SELECT emp_id FROM employees t2 WHERE employees.job_name='ANALYST');
+select * from employees;
+emp_id	emp_name	job_name	manager_id	hire_date	salary	commission	dep_id	gender
+63679	SANDRINE	CLERK	69062	1990-12-18	900.00	NULL	2001	female
+64989	ADELYNE	SALESMAN	66928	1991-02-20	1700.00	400.00	3001	male
+65271	WADE	SALESMAN	66928	1991-02-22	1350.00	600.00	3001	male
+65646	JONAS	MANAGER	68319	1991-04-02	2957.00	NULL	2001	male
+66564	MADDEN	SALESMAN	66928	1991-09-28	1350.00	1500.00	3001	male
+66928	BLAZE	MANAGER	68319	1991-05-01	2750.00	NULL	3001	female
+67832	CLARE	MANAGER	68319	1991-06-09	2550.00	NULL	1001	female
+67858	SCARELET	ANALYST	65646	1997-04-19	3100.00	650.00	2001	female
+68319	KAYLING	PRESIDENT	NULL	1991-11-18	6000.00	NULL	1001	male
+68454	TUCKER	SALESMAN	66928	1991-09-08	1600.00	0.00	3001	male
+68736	ADNRES	CLERK	67858	1997-05-23	1200.00	NULL	2001	female
+69000	JULIUS	CLERK	66928	1991-12-03	1050.00	NULL	3001	female
+69062	FRANK	ANALYST	65646	1991-12-03	3100.00	650.00	2001	male
+69324	MARKER	CLERK	67832	1992-01-23	1400.00	NULL	1001	male
